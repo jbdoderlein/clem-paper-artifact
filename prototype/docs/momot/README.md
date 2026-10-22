@@ -1,0 +1,125 @@
+# MOMoT documentation for AI agents
+
+This folder contains structured markdown documentation so **AI agents** can generate **valid `.momot` files** from:
+
+- **`.ecore`** metamodel(s) (domain of the models)
+- **`.henshin`** transformation module(s) (rules/units)
+- A **natural-language prompt** (e.g. "minimize coupling and solution length")
+
+## Target audience
+
+Agents that take .ecore and .henshin files plus a user prompt and output a complete, parseable, and semantically valid `.momot` orchestration file.
+
+## How to use this documentation
+
+| Goal | Read |
+|------|------|
+| Generate a .momot from scratch | [01-overview](01-overview.md) → [05-ecore-henshin-integration](05-ecore-henshin-integration.md) → [07-generation-guide](07-generation-guide.md) |
+| Understand syntax and structure | [02-syntax-and-structure](02-syntax-and-structure.md), [03-search-orchestration](03-search-orchestration.md), [04-experiment-analysis-results](04-experiment-analysis-results.md) |
+| Avoid validation errors | [06-validation-and-errors](06-validation-and-errors.md) |
+| Look up keywords and rules | [08-reference](08-reference.md) |
+
+**Full generation path:** 01 → 02 → 03 → 04 → 05 → 06 → 07; use 08 for quick reference while generating.
+
+## Document index
+
+- **[01-overview](01-overview.md)** — What MOMoT is; roles of .ecore, .henshin, and .momot
+- **[02-syntax-and-structure](02-syntax-and-structure.md)** — Grammar, file extension, section order, Xbase
+- **[03-search-orchestration](03-search-orchestration.md)** — `search`: model, solutionLength, transformations, fitness, algorithms
+- **[04-experiment-analysis-results](04-experiment-analysis-results.md)** — experiment, analysis, results
+- **[05-ecore-henshin-integration](05-ecore-henshin-integration.md)** — Paths, Ecore registration, .henshin type resolution (nsURI), ignoreUnits vs parameterValues
+- **[06-validation-and-errors](06-validation-and-errors.md)** — Validator rules, errors, warnings, how to fix
+- **[07-generation-guide](07-generation-guide.md)** — Step-by-step: (.ecore + .henshin + prompt) → .momot
+- **[08-reference](08-reference.md)** — Compact grammar and reference tables
+- **[examples/](examples/)** — Minimal .momot snippets and examples
+
+## Agent prompts (repo-specific)
+
+- **`AGENT_PROMPT-update-momot-goal-and-edits.md`** — Update `blocky_momot/blocky.momot` to use the Blocky statement insert/delete/replace module and optimize:
+  - least edits (closeness to input),
+  - reaching GOAL,
+  - shortest execution path.
+
+## Minimum valid .momot
+
+A minimal valid `.momot` file must define **search** and **experiment**. The following is a minimal example (paths must exist in the project).
+
+```momot
+package my.project.momot
+
+import at.ac.tuwien.big.momot.^search.^fitness.dimension.TransformationLengthDimension
+import at.ac.tuwien.big.momot.^search.solution.repair.TransformationPlaceholderRepairer
+import at.ac.tuwien.big.moea.^experiment.executor.listener.SeedRuntimePrintListener
+import at.ac.tuwien.big.momot.^search.algorithm.operator.mutation.TransformationPlaceholderMutation
+import org.moeaframework.core.operator.OnePointCrossover
+import org.moeaframework.core.operator.TournamentSelection
+import my.project.metamodel.MyPackage
+
+initialization = {
+   MyPackage::eINSTANCE.eClass
+}
+
+search = {
+   model = {
+      file = "model/input.xmi"
+   }
+   solutionLength = 10
+   transformations = {
+      modules = [ "model/rules.henshin" ]
+   }
+   fitness = {
+      objectives = {
+         SolutionLength : minimize new TransformationLengthDimension
+      }
+      solutionRepairer = new TransformationPlaceholderRepairer
+   }
+   algorithms = {
+      NSGAII : moea.createNSGAII(
+         new TournamentSelection(2),
+         new OnePointCrossover(1.0),
+         new TransformationPlaceholderMutation(0.15))
+   }
+}
+
+experiment = {
+   populationSize = 50
+   maxEvaluations = 1500
+   nrRuns = 30
+   progressListeners = [ new SeedRuntimePrintListener ]
+}
+```
+
+Replace `my.project.momot`, `my.project.metamodel.MyPackage`, `model/input.xmi`, and `model/rules.henshin` with values derived from the given .ecore and .henshin files and project layout. See [07-generation-guide](07-generation-guide.md) for the full procedure.
+
+## Eclipse tooling (human developers)
+
+This folder documents the **`.momot` language** for agents. To **run** MoMoT in Eclipse (as in the **`blocky_momot`** project), install Henshin, Papyrus, and MoMoT — easiest via the shared target platform in **[INSTALL.md](../../INSTALL.md)** §1.2 and [`releng/blocky-modeling-2026-06.target`](../../releng/blocky-modeling-2026-06.target).
+
+## Repo-specific: Direct Manipulation → MoMoT auto-run
+
+This repository wires MoMoT into the game as an **optional** “synthesize after direct manipulation” workflow:
+
+- **Intermediate goal**: `CellType.DMG` marks the **Direct Manipulation Goal** (DMG). It is distinct from the level’s original `GOAL`.
+- **Request model**: after a DM click, the game writes a MoMoT input snapshot to `blocky_momot/model/input/direct_manipulation_request.xmi`.
+- **Results**: each run is stored under `blocky_momot/output_dm_*/` (objectives, solutions, and exported models).
+  - **UI behavior**: the game’s MoMoT panel shows **only solutions from the most recent run** (the output directory of the current DM-triggered run). Older runs are kept on disk but hidden in the panel by default.
+
+**Java 21 note:** MoMoT/MOEA may require `--add-opens java.base/java.util=ALL-UNNAMED` when run inside the app (see [INSTALL.md](../../INSTALL.md)).
+
+## Repo-specific: Loading a MoMoT solution in the UI (in-place)
+
+When the user selects a MoMoT-produced solution model (`*.xmi`) from the MoMoT panel, the app applies it **in-place**:
+
+- **No WebView reload**: the Maze page is not reloaded.
+- **MoMoT panel stays open** and the execution log panel remains intact.
+- **Blocks update as-if edited**: the Blockly workspace is replaced programmatically with the solution’s program.
+- **DM overlays update**: baseline/solution path-diff overlays are re-rendered using the already-captured DM baseline.
+
+### Implementation notes (Blocky UI / Blockly Maze constraints)
+
+- Blockly Maze typically uses a `maze_forever` block for "Repeat Until Goal" behavior.
+- To keep MoMoT solutions loadable and semantically correct, the Java-side XML generator:
+  - maps EMF `Loop` statements to `maze_forever` blocks,
+  - supports sequential blocks before or after loops (though blocks after a `maze_forever` are unreachable in the game),
+  - preserves the structure of the model solution in the Blockly workspace.
+- **Note:** While some restricted Maze levels might expect a single top-level loop, the generator now prioritizes matching the model's structure.

@@ -1,0 +1,72 @@
+{\LARGE\bfseries Document III: Perception Questionnaire}
+\vspace{1em}
+\question{Participant identifier:} \blank[6cm]
+\vspace{1em}
+\section{Questions about the experiment}
+
+\begin{enumerate}[leftmargin=*,label=\arabic*.,itemsep=0.6em]
+  \ratingheader[strongly disagree][strongly agree]
+
+  \rating*{The modeling tasks were easy to complete}
+  \rating*{I had enough time to complete the tasks}
+  \rating*{I revised my models many times}
+  \rating*{I am satisfied with my final models}  
+  \rating*{I lacked information or guidance while modeling}
+\end{enumerate}
+
+\vspace{1em}
+\newcommand{\system}{environment\xspace}
+\section{Usability of the \system}
+\vspace{1em}
+\noindent
+
+\newcommand{\systemDesc}{modeling environment you used to complete the Block game\xspace}
+
+In the following questions, the word \textit{``\system''} refers to the \textbf{\systemDesc}.
+\vspace{1em}
+\begin{enumerate}[leftmargin=*,label=\arabic*.,itemsep=0.6em]
+  %\ratingheader[strongly disagree][strongly agree]
+  \rating*{I think that I would like to  
+   use this \system frequently}
+  \rating*{I found the \system unnecessarily 
+   complex }
+  \rating*{I thought the \system was easy to use}
+  \rating*{I think that I would need the support of a technical person to be able to use this \system}
+  \rating*{I found the various functions in this \system were well integrated}
+  \rating*{I thought there was too much inconsistency in this \system}
+  \rating*{I would imagine that most people would learn to use this \system very quickly}
+  % \rating*{I felt that the tool suggestions were not useful} <- Sayyid is confused, because this is not the part of SUS. While I understand that we need this, I will not deviate too much from SUS. It is easier to argue in the paper that we use SUS, and only adapt the questionnaire questions accordingly to fit our domain. Then again, what is considered `tool suggestions` here? The generated candidates? So it feels like this question target a different subject to the SUS, which IMO, is also not good. If we want this, we can use open-ended question or create another category focusing on the feedback instead. 
+  \rating*{I found the \system very cumbersome to use}
+  \rating*{I felt very confident using the \system}
+  \rating*{I needed to learn a lot of things before I could get going with this \system}
+\end{enumerate}
+\iftreatment
+\vspace{1em}
+\newpage
+\section{Suggestions of the tool}
+\vspace{1em}
+\begin{enumerate}[leftmargin=*,label=\arabic*.,itemsep=0.6em]
+  %\ratingheader[strongly disagree][strongly agree]
+  \rating*{I thought specifying the intent to the tool was tedious}
+  \rating*{I found that this tool helped me finding models matching my intent}
+  \rating*{I felt that the candidates generated from the tool were not useful}
+\end{enumerate}
+\fi
+\vspace{1em}
+\section{Open questions}
+\vspace{1em}
+\begin{enumerate}[leftmargin=*,label=\arabic*.,itemsep=0.6em]
+  \question{How did you approach the modeling task? Describe the steps you followed.}
+  \answerlines[9]
+  \question{Which part of the task was most difficult, and why?}
+  \answerlines[8]
+  \iftreatment
+  \question{Describe a moment when using the tool was helpful. Please detail as much as possible.}
+  \answerlines[9]
+  \question{Describe a moment when using the tool was irrelevant or misleading. Please detail as much as possible.}
+  \answerlines[10]
+  \else
+  \question{What kind of support would have helped you most during the task?}
+  \answerlines[10]
+  \fi
+\end{enumerate}

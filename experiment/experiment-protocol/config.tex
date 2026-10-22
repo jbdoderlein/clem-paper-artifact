@@ -1,0 +1,116 @@
+% --- Packages ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{fancyhdr}
+\usepackage{amssymb}
+\usepackage{titlesec}
+\usepackage{parskip}
+\usepackage{enumitem}
+\usepackage{array}
+\usepackage[most]{tcolorbox}
+\usepackage{cleveref}
+\usepackage{xspace}
+
+% --- Page styling ---
+\usepackage[margin=2.5cm]{geometry}
+
+\pagestyle{fancy}
+\fancyhf{}  
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+
+% --- Section style ---
+\titleformat{\section}{\large\bfseries}{\thesection.}{0.5em}{}
+\titlespacing*{\section}{0pt}{1.2em}{0.4em}
+
+% --- Boxes around text ---
+\newtcolorbox{framedtext}{
+  breakable,             % allows the box to continue on the next page
+  colback=white,         % background color
+  colframe=black,        % border color
+  boxrule=0.5pt,         % border thickness
+  sharp corners,         % square corners (remove for rounded)
+  left=8pt, right=8pt, top=6pt, bottom=6pt
+}
+
+% --- Questionnaire helpers ---
+\setlength{\parindent}{0pt}
+\newcommand{\checkbox}{$\square$\ }
+\newcommand{\blank}[1][4cm]{\rule{#1}{0.4pt}}
+\newcommand{\rbox}[1]{\fbox{\makebox[0.6em]{\small #1}}}
+\newlength{\scalewidth}\setlength{\scalewidth}{3.6cm}
+\newcommand{\scale}{\makebox[\scalewidth][s]{\rbox{1}\hfill\rbox{2}\hfill
+  \rbox{3}\hfill\rbox{4}\hfill\rbox{5}}}
+
+% Questions work both inside and outside an enumerate environment.
+% Inside enumerate they are numbered by the list; outside they have no number.
+\newlength{\questionsep}\setlength{\questionsep}{0.9em}
+
+\makeatletter
+\newcommand{\@qstart}{%
+  \ifnum\@enumdepth>0
+    \item%                                  inside enumerate: list numbering
+  \else
+    \par\addvspace{\questionsep}\noindent%  standalone: no number
+  \fi}
+\newcommand{\question}[1]{\@qstart\textbf{#1}}
+
+% Space kept between the end of the text and the rating boxes
+\newlength{\ratinggap}\setlength{\ratinggap}{1em}
+
+% \rating{...} bold statement; \rating*{...} plain statement
+% Long statements wrap (ragged-right) inside the column to the left of the
+% scale; the dotted leader and the boxes always sit at the end of the last line.
+\NewDocumentCommand{\rating}{s m}{%
+  \@qstart
+  \begingroup
+    \rightskip=\glueexpr\scalewidth+\ratinggap+0pt plus 1fil\relax
+    \parfillskip=-\rightskip
+    \IfBooleanTF{#1}{#2}{\textbf{#2}}%
+    \nobreak\dotfill\nobreak
+    \hbox to \dimexpr\scalewidth+\ratinggap\relax{\hfil\scale}%
+    \par
+  \endgroup}
+
+% Scale labels above the rating boxes: right label on top, left label below.
+% Usage: \ratingheader  or  \ratingheader[strongly disagree][strongly agree]
+\NewDocumentCommand{\ratingheader}{O{novice} O{expert}}{%
+  \ifnum\@enumdepth>0 \item[]\else\par\addvspace{\questionsep}\noindent\fi
+  {\small\hfill #2 $\rightarrow$\\
+   \null\hfill\makebox[\scalewidth][l]{$\leftarrow$ #1}\par}%
+  \vspace{-0.4em}}
+
+%\newcommand{\rating}[1]{\@qstart\textbf{#1}\nobreak\dotfill\nobreak\ \scale\par}
+%\newcommand{\ratingheader}{%
+%  \ifnum\@enumdepth>0 \item[]\else\par\addvspace{\questionsep}\noindent\fi
+%  \hfill\makebox[\scalewidth][s]{\small $\leftarrow$ novice\hfill
+%  expert $\rightarrow$}\par\vspace{-0.6em}}
+\newcommand{\answerbox}[1][3cm]{%
+  \par\noindent
+  \fbox{\parbox[t][#1][t]{\dimexpr\linewidth-2\fboxsep-2\fboxrule}{\null}}%
+  \par}
+
+\newcommand{\answerlines}[1][3]{%
+  \par\foreach\i in {1,...,#1}{\noindent\rule{\linewidth}{0.4pt}\par\vspace{0.8em}}}
+\makeatother
+
+% --- Abbreviations ---
+
+\newcommand{\aka}{a.k.a.\xspace}
+\newcommand{\cf}{cf.\xspace}
+\newcommand{\eg}{e.g.\xspace}
+\newcommand{\etal}{et al.\xspace}
+\newcommand{\ie}{i.e.\xspace}
+\newcommand{\st}{s.t.\xspace}
+\newcommand{\viz}{viz.,\xspace}
+\newcommand{\wrt}{w.r.t.\xspace}
+
+% --- Control / treatment ---
+
+\newif\iftreatment
+%\treatmenttrue    % Treatment (experimental) group
+\treatmentfalse  % Control group
+
+\newcommand{\treatmentonly}[1]{\iftreatment #1\else\unskip\fi}
+\newcommand{\controlonly}[1]{\iftreatment\unskip\else #1\fi}

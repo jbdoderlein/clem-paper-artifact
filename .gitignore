@@ -1,0 +1,34 @@
+# Maven and Eclipse build output
+target/
+bin/
+*.class
+pom.xml.tag
+
+# Local IDE configuration
+.metadata/
+.settings/
+.idea/
+*.iml
+.vscode/
+
+# Application sessions
+level_sessions/
+momot_sessions/
+
+# Local dependencies and interpreter caches
+node_modules/
+__pycache__/
+
+# R sessions
+.Rhistory
+.RData
+.Rproj.user/
+
+# Local secrets and temporary files
+.env
+*.log
+*.tmp
+*.bak
+*~
+.DS_Store
+Thumbs.db

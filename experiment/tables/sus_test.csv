@@ -1,0 +1,2 @@
+n_control,n_treatment,mean_difference,wilcoxon_p,cliffs_delta
+5,5,9,0.3253968253968254,0.4

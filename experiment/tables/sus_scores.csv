@@ -1,0 +1,11 @@
+participant,variant,n_missing,sus
+123,control,0,90
+Ghost,control,0,82.5
+697,control,0,77.5
+Dennis,control,1,75
+784,control,0,52.5
+601,treatment,0,97.5
+476,treatment,0,85
+253,treatment,0,82.5
+735,treatment,0,82.5
+181,treatment,0,75

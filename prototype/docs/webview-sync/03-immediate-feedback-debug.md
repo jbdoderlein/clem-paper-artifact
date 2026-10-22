@@ -1,0 +1,190 @@
+# Immediate Feedback and Debug Controls
+
+This document describes the current implementation of:
+
+- **Immediate feedback overlays** (old trace vs new simulated trace when loading XMI)
+- **Debugging features** in the WebView (`Pause/Resume`, `Stop`, `Step`, `Skip End`)
+- **Immediate Feedback during paused edits** (while debugging): compare already-navigated prefix vs newly predicted path, highlight deviations, and align pegman to the last common point
+- **Execution log panel** in the WebView (step-by-step commands shown below the blocks)
+
+It is intended for contributors/agents extending `blocky_game` without breaking sync behavior.
+
+## Where the code lives
+
+- `blocky_game/src/blocky_game/ImmediateFeedbackService.java`
+  - Computes old/new path overlays for loaded models.
+- `blocky_game/src/blocky_game/DebuggingService.java`
+  - Dedicated debugger helpers (trace computation from arbitrary state, debug overlay snippet).
+- `blocky_game/src/blocky_game/GameEngine.java`
+  - Stores immediate-feedback paths.
+  - Holds debugger session state and step/tick methods.
+- `blocky_game/src/blocky_game/BlockyUI.java`
+  - Injects JS bridge hooks and debug buttons into WebView.
+  - Applies map/model state and overlay rendering in WebView.
+
+## Immediate feedback (XMI load)
+
+### Goal
+
+When loading an XMI model, show:
+
+- **Past path**: execution trace stored in the loaded model
+- **New path**: re-simulated trace from the currently loaded solution
+
+with distinct colors so changes are visible without manual comparison.
+
+### Flow
+
+1. `BlockyUI` loads XMI via `GameEngine.loadFromFile(...)`.
+2. `GameEngine` calls `ImmediateFeedbackService.computePaths(level)`.
+3. Engine exposes paths via `getPastPath()` / `getNewPath()`.
+4. `BlockyUI.applyLevelToWebView(...)` injects:
+   - `window.__injectPastPath`
+   - `window.__injectNewPath`
+5. Injected JS draws SVG overlays:
+   - `pathPast` (red)
+   - `pathNew` (green)
+
+### Notes
+
+- `ImmediateFeedbackService` compresses consecutive duplicate positions (turn-only states).
+- If a trace is sparse/missing, overlays degrade gracefully to start-cell markers.
+
+## Debug controls
+
+### Goal
+
+Enable step-by-step program debugging directly in WebView:
+
+- `Pause/Resume`
+- `Stop`
+- `Step` (one state then pause)
+- `Skip End` (jump to final state: GOAL/CRASH/INFINITE_LOOP heuristic)
+
+Users can edit blocks while paused; next resume/step recomputes from current state.
+
+### Immediate Feedback during paused edits (debugging)
+
+When a user edits blocks while paused in a debug session and then presses **Resume** or **Step**, the system provides Immediate Feedback by:
+
+- **Past prefix**: the already-navigated path prefix so far
+- **New preview**: the newly predicted full path after the edit
+- **Deviation highlight**: draw the diverging segment in a different style/color
+- **Teleport/alignment**: move pegman to the **last common cell** (path-only match by `(x,y)`)
+- **Correct continuation**: resume/step continues from the aligned state, not from statement 1
+
+Implementation notes:
+
+- The alignment happens on **Resume/Step**, not on every workspace change.
+- `GameEngine.debugFrameJson()` includes `pastPrefix`, `newPreview`, and `common` (common prefix length) for overlay rendering.
+- A one-shot `note` line is emitted into the execution log when such alignment occurs.
+
+### Important design choices
+
+- Debugging is **Java-driven**, not WebView-interpreter-driven.
+- During debug stepping, JS sync only updates **program XML**.
+  - It intentionally avoids `syncMap` / `syncLevelMeta` to prevent orientation instability from feeding `window.T` back into model metadata.
+- Auto-run click after injection is disabled when debug controls are active.
+- Run-button observer ignores style changes while a debug session is active.
+- On XMI loads, debug start direction seeds from model start orientation (`window.__modelStartT`) instead of Maze reset defaults.
+
+### Engine session state
+
+`GameEngine` maintains:
+
+- `debugTrace`
+- `debugIndex`
+- `debugPaused`
+- `debugDirtySolution`
+- current/start `(x,y,dir)` snapshots
+
+Primary methods:
+
+- `debugStart(q,s,t)`
+- `debugTogglePause()`
+- `debugStepOnce()`
+- `debugTick()`
+- `debugStop()`
+- `debugSkipToEnd()`
+
+`debugFrameJson()` returns UI frame data:
+
+- current position/orientation
+- current prefix path
+- paused flag
+- result status (`RUNNING`, `GOAL`, `CRASH`, `INFINITE_LOOP`)
+- current step log line (`logLine`)
+
+## Execution log panel
+
+### Goal
+
+Show comprehensive, step-by-step execution logs directly inside the Maze WebView in the large whitespace **below the blocks** and **above the trashcan**.
+
+This panel is populated for:
+
+- Debugger actions: `Step`, `Resume` (via `debugTick`), `Skip End`, `Stop`
+- Normal `Run` execution (Java simulation)
+
+### WebView UI injection
+
+Injected by `BlockyUI.injectDebugControls(...)`:
+
+- `div#__execLogPanel` (container)
+- `pre#__execLogBody` (scrollable log output)
+- helpers:
+  - `window.__execLogClear()`
+  - `window.__execLogAppend(linesOrArray)`
+
+The log panel is intentionally implemented as injected DOM/CSS so we don’t have to modify the minified Maze HTML generator.
+
+### Data flow
+
+- **Debugger**:
+  - Java computes a trace from arbitrary `(q,s,dir)` via `DebuggingService.computeTraceFromState(...)`.
+  - `GameEngine.debugFrameJson()` returns `logLine` aligned with the current trace index.
+  - Injected JS appends `fr.logLine` exactly once per new `fr.index` (tracked by `window.__dbgLastLoggedIndex`).
+  - If paused edits caused an alignment, `GameEngine.debugFrameJson()` also returns `note` and injected JS appends it once (tracked by `window.__dbgLastNote`).
+
+- **Normal Run**:
+  - `JSBridge.runSimulation()` clears the panel then calls `GameEngine.simulateUserProgramWithLogs()`.
+  - The returned `List<String>` is appended into the WebView in one batch.
+
+### WebView behavior
+
+Buttons are injected only by:
+
+- default/page load path (`injectDebugControls(...)`)
+
+`applyLevelToWebView(...)` does not create duplicate debug bindings.
+
+Debug overlay is rendered via `DebuggingService.renderDebugOverlayJsSnippet()`.
+
+Current behavior:
+
+- removes green immediate-feedback overlay (`pathNew`) while debugging
+- draws a **cumulative** path for all debug steps in the current prefix
+- optionally draws **pastPrefix vs newPreview** (Immediate Feedback during paused edits) and highlights deviation
+- highlights current cell
+- disables `Step`/`Skip End` when a terminal frame is reached (`GOAL`, `CRASH`, `INFINITE_LOOP`)
+- uses a step in-flight lock so rapid clicking cannot queue overlapping step calls
+
+## Known caveats
+
+- JavaFX `executeScript(...)` uses large concatenated JS strings; syntax errors can break all injected behavior.
+- If adding new JS comments inside injected strings, avoid `//` in single-line contexts; prefer block comments.
+- Maven may not be installed in all dev environments; use IDE build diagnostics as fallback.
+- WebView script injections are wrapped in Java-side try/catch logging; check `[BlockyUI] inject* failed` lines when load/debug UI appears broken.
+
+## Regression checklist
+
+1. Load default level (no XMI) -> debug buttons appear.
+2. Load model from XMI -> immediate feedback red/green overlays appear.
+3. Start debugging -> green path is cleared, debug segment appears.
+4. On XMI-loaded levels, `debugStart` uses model start orientation (no forced EAST reset).
+5. `Step` changes exactly one trace state and pauses.
+6. Rapidly clicking `Step` does not skip visual updates or enqueue parallel steps.
+7. `Skip End` jumps to final state and pauses.
+8. At terminal result, `Step`/`Skip End` are disabled with terminal tooltip.
+9. While paused, edit blocks -> next `Step/Resume` uses updated logic from current state.
+

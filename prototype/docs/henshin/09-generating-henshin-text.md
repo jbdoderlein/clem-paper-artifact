@@ -1,0 +1,206 @@
+# Generating henshin_text (agent and codegen guide)
+
+This document tells agents and code generators how to produce **valid** `.henshin_text` files that pass the parser and validator. Use it when writing scripts or tools that emit henshin_text.
+
+## 1. ePackageImport: qualified name only
+
+**Syntax:** `ePackageImport` followed by a single **qualified name** (EString): one or more identifiers separated by dots.
+
+**Valid:**
+```
+ePackageImport blocky
+ePackageImport bank
+ePackageImport my.package.name
+```
+
+**Invalid:** Do **not** use a quoted URI or string literal. The grammar does not accept it and will report a parse error (e.g. "missing EOF at '...'").
+
+```
+ePackageImport blocky "platform:/resource/blocky_model/model/blocky.ecore"   // INVALID
+```
+
+The package is resolved by the tooling from the project (e.g. Ecore in the same workspace). No platform URI in the file.
+
+**If you get "Couldn't resolve reference to EPackage 'blocky'":** The editor cannot find the package. Keep the `.henshin_text` file in the **blocky_model** project, build that project, and ensure the blocky package is registered in the running Eclipse (e.g. use the blocky_henshin_fragment in your run configuration). See [README.md](README.md#troubleshooting-couldnt-resolve-reference-to-epackage-blocky).
+
+---
+
+## 2. EEnum (Ecore enum) attribute values
+
+When a node attribute has an **EEnum** type (e.g. `AtomicStatement.kind:AtomicStatementKind`, `IfStmt.condition:ConditionKind`, `Level.startOrientation:Direction`), use one of these:
+
+### Option A: Integer literal (recommended for generated files)
+
+Use the **numeric value** of the EEnum literal as defined in the Ecore model. The Henshin/EMF runtime accepts integer for EEnum attributes.
+
+- In Ecore, the first literal usually has value 0, the next 1, etc. (see the `.ecore` file).
+- Example: `kind = 0` (TURN_LEFT), `kind = 1` (TURN_RIGHT), `kind = 2` (MOVE_FORWARD); `condition = 0` (CHECK_FORWARD), `condition = 1` (CHECK_LEFT), `condition = 2` (CHECK_RIGHT).
+
+**Pros:** No `javaImport` needed; no "X doesn't exist" from the Java scope. **Cons:** You must know the literal order/value from the metamodel.
+
+### Option B: JavaAttributeValue (EnumType.Literal)
+
+Use the form `EnumType.Literal` (e.g. `AtomicStatementKind.TURN_LEFT`, `ConditionKind.CHECK_FORWARD`). The grammar parses this as **JavaAttributeValue** (ID '.' ID).
+
+- You **must** add `javaImport <package>` to the rule, where `<package>` is the Java package that contains the generated enum class (e.g. `blocky`).
+- The validator resolves the class and field in that package. If the package is not on the editor’s classpath, you get "X doesn't exist."
+
+**Use Option A** when generating files so that they validate without depending on the Java package being on the classpath.
+
+---
+
+## 3. Delete rules: no duplicate nodes, no preserve-edges touching delete-nodes
+
+### One declaration per node
+
+Each graph element (node) must be declared **once** with a single action type. Do **not** declare the same node name twice (e.g. both `node block : Block` and `delete node block : Block`). That causes **"Duplicate GraphElements 'block'"**.
+
+**Correct:** Declare the node to be deleted once with the delete action:
+```
+delete node block : blocky.Block
+```
+
+**Wrong:** Declaring it as preserve and again as delete:
+```
+node block : blocky.Block
+...
+delete node block : blocky.Block
+```
+
+### No preserve-edges between preserve-nodes and delete-nodes
+
+A **preserve** edge (default when no action is given) is **not allowed** between a preserve-node and a delete-node. The validator reports: "A preserve-edge is not allowed between a preserve-node and a delete-node."
+
+**Correct:** For edges that touch the delete-node, use only **delete** (or **create** for the new edge when reparenting). Do **not** list those edges as preserve.
+
+- When deleting a block that has no successor: list only `(delete container->block:ref)` for the containment edge, not `(container->block:ref)`.
+- When deleting a block that has a successor (reparent): list `(create container->rest:ref)`, `(delete container->block:ref)`, `(delete block->rest:next)`. Do **not** list `(container->block:ref)` or `(block->rest:next)` as preserve.
+
+Preserve-edges that do **not** touch the delete-node are fine (e.g. `(game->level:levels)`).
+
+---
+
+## 4. Edges: one list per graph
+
+Put all edge specifications for a graph in **one** `edges [ ... ]` list. Multiple edge specs (preserve, create, delete, forbid) can be combined in that single list with commas.
+
+**Valid:**
+```
+edges [(game->level:levels), (forbid block->nextBlock:next), (delete level->block:solution)]
+```
+
+Avoid multiple separate `edges [ ... ]` (and `create edges [ ... ]`) blocks in the same graph; that can lead to parser errors like "mismatched input 'edges' expecting 'node'".
+
+---
+
+## 5. Compiled .henshin: use package nsURI at runtime
+
+The Henshin **compiler** (Transform to Henshin) writes type references in the generated `.henshin` XML using the Ecore file path (e.g. `../model/blocky.ecore#//AtomicStatement`). At **runtime**, the MoMoT/Henshin interpreter often cannot resolve that path, so types become `null` and you get **"Missing factory for 'Node ...:null'"**.
+
+**Fix:** Replace Ecore path hrefs in the compiled `.henshin` with the **package nsURI** so the interpreter resolves types from the registered EPackage:
+
+- In the `.henshin` file, replace every `../model/blocky.ecore#` (or similar path) with `http://www.example.org/blocky#` (use the **nsURI** from your `.ecore` package).
+- Do this after each "Transform to Henshin". In this repo you can also run the Java utility `blocky.util.HenshinNsUriRewriter` on the compiled `.henshin` file (default target: `blocky_model/transformations/statement_insertions_henshin_text.henshin`).
+
+---
+
+## 6. MoMoT-friendly rules (codegen)
+
+If the rules will be used by **MoMoT** (search-based transformation), generate rules that work without extra setup:
+
+1. **Avoid IN parameters and attribute conditions** unless you will configure `parameterValues` in the .momot file. If rules declare `IN allowConditionals:EBoolean` and `conditions [allowConditionals == true]`, MoMoT must set those parameters; if not set, you get **"IN Parameter ... not set"**. Either omit parameters/conditions in the generator, or list those units in **ignoreUnits** in the .momot config.
+2. **Empty container / root context:** When adding to a slot on an object that is only reachable from the **root** (e.g. `Level.solution` when the input graph root is `Game`), the LHS must include the root and the containment edge so the matcher can find the container. Example: `node game : blocky.Game`, `node level : blocky.Level`, `edges [(game->level:levels)]`, then forbid/create as usual. Otherwise the search may find no matches (e.g. "Infinity Infinity" when the solution is empty).
+
+---
+
+## 7. Checklist for generated files
+
+- [ ] **ePackageImport**: Qualified name only (e.g. `blocky`). No quoted URI.
+- [ ] **EEnum attributes**: Prefer integer literals (value from Ecore). If using `EnumType.Literal`, add `javaImport` for the generated model package.
+- [ ] **Delete rules**: Each node declared once (e.g. only `delete node block`). No preserve-edges between preserve-node and delete-node; use delete/create for edges touching the delete-node.
+- [ ] **Edges**: Single `edges [ ... ]` per graph with all edge specs comma-separated.
+- [ ] **Encoding**: UTF-8 without BOM (avoids "required loop did not match" at line 1).
+- [ ] **Extension**: File must have extension `.henshin_text`.
+- [ ] **MoMoT**: No IN parameters/conditions unless parameterValues will be set; for slots on objects under the root (e.g. Level.solution), include root + containment edge in LHS.
+- [ ] **Compiled .henshin**: After Transform to Henshin, replace Ecore path hrefs with package nsURI in the .henshin file (or run the script’s two-arg mode).
+
+---
+
+## 8. Blocky program lists: insert / delete / replace patterns (container linked list)
+
+In the current `blocky.ecore`, program bodies are container-based **containment linked lists**:
+
+- `Body.firstContainer` is **containment** (head of the list)
+- `Container.next` is **containment** (rest of the list)
+- `Container.statement` is **containment** (payload)
+
+This has two practical consequences for correct transformations:
+
+- **Insert** splits into location families (empty body / before head / between / after last).
+- **Delete/Replace** must be **containment-safe** for containers: if you delete a `Container` that has a contained `next`, you must **re-home** that `next` first (rewire the list) or EMF will delete the tail as part of containment cleanup.
+
+### 8.1 Minimal safe container delete rule set (4 rules)
+
+To delete **exactly one** container (and keep the remainder intact), you need these four cases:
+
+- **only element in a body**: delete `body->curr:firstContainer`, and require `curr` has **no** `next`
+- **head with successor**: re-home successor to `body.firstContainer`, then delete head
+- **middle with successor**: re-link `prev.next` to `next`, then delete `curr`
+- **last element**: delete `prev->curr:next`, and require `curr` has **no** `next`
+
+These 4 rules are the analogue of “insert position” rules, but for containment-safe deletes on `Container` chains. (If you also want to delete the payload statement, include `(delete curr->stmt:statement)` in the same rule.)
+
+### 8.2 “Replace at same position” requires anchoring (don’t rely on sequencing)
+
+**Important:** In a sequential unit, a later rule call does *not* automatically reuse the same match objects from an earlier rule. If you do:
+
+`deleteSomething(); createNew(); insertSomewhere();`
+
+the `insertSomewhere` step may match a **different** position if multiple matches exist.
+
+To guarantee “delete here, then insert exactly here”, you must carry **anchors** (EObjects) across steps via parameters/`VAR`, and use **anchored insert rules**.
+
+Typical anchors by case:
+
+- **only-in-body**: `body`
+- **head-with-successor**: `body` and `headNext`
+- **middle-with-successor**: `prev` and `next`
+- **last**: `prev`
+
+Then define anchored insert rules such as:
+
+- `InsertContainerIntoEmptyBodyAt(IN body:Body, OUT c:Container)`
+- `InsertContainerBeforeSpecificHead(IN body:Body, IN head:Container, OUT c:Container)`
+- `InsertContainerBetweenSpecificNext(IN prev:Container, IN next:Container, OUT c:Container)`
+- `InsertContainerAfterSpecificLast(IN prev:Container, OUT c:Container)`
+
+and then a second step that populates `c` via `(create c->stmt:statement)` with an `AtomicStatement` / `Loop` / `IfStmt`.
+
+and replacement units that follow the pattern:
+
+1. **Delete rule** with `OUT` anchor parameters
+2. **CreateAnything(...)** binding `stmt` (often through `VAR stmt:Statement`)
+3. **Anchored insert** using those anchors + `stmt`
+
+### 8.3 Avoiding generated helper units (“Sequence…INDEPENDENT…”) in compiled `.henshin`
+
+The Henshin Text → Henshin compiler tends to introduce many helper `SequentialUnit`s when:
+
+- branches inside `independent [ ... ]` contain **blocks** like `{ a b c }`, or
+- branches have **different call signatures** (some calls take `kind`, others don’t), so wrappers are inserted to normalize parameters.
+
+To keep compiled `.henshin` concise:
+
+- Prefer `independent [ call1(...), call2(...), call3(...) ]` (no `{ ... }` blocks).
+- Make branch calls share the same signature (e.g. pass `kind`/`condition` through to all create rules, even if ignored).
+
+---
+
+## 8. References
+
+- [01-file-structure-and-grammar](01-file-structure-and-grammar.md) — Model, ePackageImport, rule/unit syntax.
+- [02-rules-and-graphs](02-rules-and-graphs.md) — Nodes, edges, action types.
+- [05-expressions-and-types](05-expressions-and-types.md) — Expressions, atomic values, parameters.
+- [06-validation-rules](06-validation-rules.md) — All validator constraints.
+- `blocky_model/transformations/statement_insertions.henshin_text` — reference edit operators for the current container-based metamodel.
+- `blocky_model/src/blocky/util/HenshinNsUriRewriter.java` — rewrites compiled `.henshin` type hrefs to nsURI-based hrefs for runtime (MoMoT/Henshin).

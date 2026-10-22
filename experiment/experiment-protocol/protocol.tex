@@ -1,0 +1,149 @@
+\documentclass[11pt,a4paper]{article}
+
+\input{experiment-protocol/config}
+
+\treatmentfalse
+
+\setlength{\scalewidth}{3.4cm}  % slightly narrower so the longest statement fits
+
+\begin{document}
+
+
+%\begin{center}
+{\LARGE\bfseries CLEM Evaluation Protocol}
+%\end{center}
+\vspace{1em}
+
+This is the \textbf{Ground Truth} of CLEM evaluation protocol. This is a mix between the original user study protocol and the backup plan.
+
+\section{Claims to be evaluated}
+
+Looking at the Introduction (Section I) of our paper, we have to provide a proof to support several claims:
+
+\textbf{(Claim A)} CLEM reduces the cost of evaluating each xDM candidate (gulf of evaluation)
+
+\begin{enumerate}
+    \item ``Each iteration is further slowed by a compile-build-deploy process that delays access to the RTMs.'' \textbf{(Paragraph 2)}
+    \item ``CLEM leverage immediate feedback to obtain the RTMs of the xDM candidates and derive their functional and non-functional properties without further input from the modelers.'' \textbf{(Paragraph 4)}
+\end{enumerate}
+
+\textbf{(Claim B)} CLEM turns trial and error into a guided search (gulf of execution)
+
+\begin{enumerate}
+    \item ``Without proper tool support, bridging them requires mentally simulating the execution engine's semantics.'' \textbf{(Paragraph 1)}
+    \item ``Lacking proper tool support, modelers perform exploratory modeling manually by trial and error, i.e., iterating over candidate xDMs formulated from their mental simulation of the execution semantics until one satisfied the desired properties.'' \textbf{(Paragraph 2)} 
+    \item ``Replacing mental simulation with a search for xDMs that satisfy the modeler's intent.'' \textbf{(Paragraph 4)} 
+\end{enumerate}
+
+\textbf{(Claim C)} CLEM help modelers discover xDMs that have better trade-offs between properties with regards to their intent
+
+\begin{enumerate}
+    \item ``Improving one property often worsens another.'' \textbf{(Paragraph 2)}
+    \item ``Each candidate on the front is shown with its value for every objective, so modelers can weigh the trade-offs and select the candidate that best matches their intent.'' \textbf{(Paragraph 4)}
+\end{enumerate}
+
+There are two other claims made in Section I that I am not considering to proof in this backup plan:
+
+\begin{enumerate}
+    \item (D) CLEM can express intents that existing approaches cannot
+    \item (E) CLEM helps modelers relate design decisions to their consequences
+\end{enumerate}
+
+We will not evaluate E because it will be considered out of scope for the NIER Paper. We are also not going to evaluate D because it is an argumentation of our work compared to the existing ones.
+
+\section{Research Question}
+
+To what extent does CLEM \textbf{improve modeler's exploration over the trade-offs between objectives}?
+
+%Please note that these time measurements are intended to determine what constitutes a session of model design, not to evaluate your abilities or performance.
+
+\section{Hypothesis}
+
+From my point of view, we have three hypothesis. 
+
+\begin{framedtext}
+$H_1$ - Modelers using CLEM explore more of the xDMs that represent the Pareto front, compared to manual. 
+\end{framedtext}
+
+In manual exploration, modelers must design every candidate themselves. This effort makes it more difficult to reach the xDMs on the Pareto front, and likely that they settle for dominated ones. CLEM instead enumerates candidates over the iterations, until finding the Pareto front. As a consequence, modelers should be able to select among strong alternatives rather than constructing them. We therefore expect them to obtain more xDMs on the Pareto front and to choose non-dominated xDMs more often. 
+
+% In a manual exploration, developers have to design by themselves models, while CLEM already offers candidates to analyze. We ignore how good can be the xDMs with regards to the trade-offs when created manually, and because it represent a cognitive effort to make them, we expect modelers solutions less qualitative as the problem grows. Whereas CLEM proposes candidates getting as close as possible to the Pareto front at every iteration of the exploration process. As a consequence we expect CLEM to "open the eyes" of the modelers toward (1) more possible candidates, (2) better in terms of closeness to the Pareto front, \ie non-dominated solutions.
+
+% Specifically, we expect CLEM to improve modeler's exploration over the trade-offs by providing:
+
+% \begin{enumerate}[label=(\alph*)]
+%     \item a process to obtain the best xDM for each objective (e.g., the fewest-blocks and the shortest-path xDMs) in more levels
+%     \item a process to decide which model best suits the modeler's intent while ensuring it is also a non-dominated solution.
+% \end{enumerate} 
+
+\begin{framedtext}
+$H_2$ - Modelers using CLEM need less time to explore the xDMs offering the best trade-offs between objectives, compared to manual. 
+\end{framedtext}
+
+We use time and iteration as a proxy for measuring the efforts. 
+Using CLEM, we expect the number of iterations to be greater than in manual as the candidate generator will provide a list of candidates to explore that the modelers will not have to produce themselves. 
+For a manual modeling process, iteration means editing the xDM, executing it, and inspect the RTMs. 
+In CLEM, iteration means editing the xDM or selecting one candidate generated form the exploration, and execute it. 
+However, we expect the time to obtain the xDMs to be shorter compared to the manual process.
+
+\begin{framedtext}
+$H_3$ - The advantage of CLEM grows with level difficulty. 
+\end{framedtext}
+
+On the easiest levels, manual exploration may perform comparably, while on harder levels the gap widens. 
+
+\section{Evaluation Protocol}
+
+%My idea is to \textbf{invite two co-authors to simulate modeler's behavior in finishing the tasks in Blocky game}. One co-author will simulate modeler's behavior for finishing the tasks in a manual exploration environment (Control variable), while the other one is for the CLEM-assisted exploration environment (Treatment variable). 
+
+\subsection{Participants}
+
+We conduct the experiment with \textbf{10 voluntary} participants recruited within JKU's lab.
+Apart from being voluntary, the only recruitment constraint is that participant \textbf{must not be familiar} with the \textit{Blocky Game}.
+
+%I believe we should exclude Hadi due to his experience in developing the tool and also already played the game a couple of times. Similarly, I (Sayyid) am interested to be the participant. However, I and Valentin have also played the Blocky game more than four times, especially for the earlier levels. Consequently, I would like to ask Jean-Baptiste, Stefan, Djamel, Manuel, or Benoit to be the participants. 
+
+%In any case, I would like to ask Hadi's help to supervise the evaluation for both control and treatment. I and Valentin can help doing this if needed. 
+
+\subsection{Tasks} 
+
+We use the \textbf{last 6} levels of Blocky Game. In each level, \textbf{reaching the destination is a hard constraint} set by the game. 
+The \textbf{non-functional objectives (e.g., the number of blocks and the path length) are left open by the game}. 
+Consequently, each participant receive the same instruction, i.e., ``In each level, find a model that moves the robot to the destination. When you are satisfied with your solution you can proceed to the next level. Please be aware that you will not be able to go back any previous levels.''
+
+\subsection{Session} 
+
+Each participant has a single \textbf{60-minutes} session. 
+For the first \textbf{10 minutes}, the experimenters will provide the participants with instructions about the experiments.
+Then participants will have the opportunity to get familiar with the blocky game by going through the \textbf{first 4 tasks} within the next \textbf{10 minutes}.
+After task the experimenters will ask participants to perform levels \textbf{5 to 10 within 30 minutes} (\ie 5 minutes per level). 
+Levels not reached within 30 minutes are counted as not completed. 
+Finally, participants will have \textbf{10 minutes} to answer the feedback/perception questionnaires \textbf{ON PAPER (to avoid collecting emails)}. After that, a discussion will be possible between participants and experimenters to wrap-up the session.
+
+\begin{framedtext}
+\textbf{WARNING!!!}
+
+\begin{itemize}
+    \item Before the beginning of a session, experimenters prepare lottery tickets where each participant ask to take one ticket. In each ticket, there is a label ``session 1'' or ``session 2''. The participants of session 1 will be assigned to the \textbf{control group}, otherwise they are assigned to the \textbf{treatment group} accordingly. 
+
+    \item \textcolor{red}{\textbf{Each group should run the experiment separately.} Otherwise they might influence themselves, \eg one participant may ask for help when using the tool, which risk to confuse participants in the control group.}
+
+    \item Experimenters generate a random ID and assigned it to each participant. Then, each participant use this ID to start the game's session and when filling the consent form and writing the post-experiment questionnaire. 
+\end{itemize}
+
+\end{framedtext}
+
+\subsection{Setup} 
+
+We prepared a Blocky game for the manual and CLEM-assisted modeling environment. 
+These environments are isolated from each other. 
+Each participant is given a session to access a modeling environment corresponding to his/her group. 
+
+In both treatment and control, an xDM counts as obtained only once the participant has executed it. Candidates displayed by CLEM but not selected and executed are not counted. Each iteration therefore yields exactly one obtained xDM. Please refer to the assumption provided in $H_2$ to understand what we meant by iteration.
+
+\subsection{Logging}
+
+The tool records every executed xDM, in both conditions, with its timestamp, level, and whether it reaches the destination. 
+For every level, we additionally record its start and end times. We consider an xDM that is executed last as the final solution selected by the participants. 
+
+\end{document}

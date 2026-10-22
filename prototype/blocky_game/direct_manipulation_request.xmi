@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="ASCII"?>
+<blocky:Game xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:blocky="http://www.example.org/blocky">
+  <levels>
+    <map width="3" height="3">
+      <cells type="START" bottom="//@levels.0/@map/@cells.3" right="//@levels.0/@map/@cells.1"/>
+      <cells x="1" type="DMG" bottom="//@levels.0/@map/@cells.4" left="//@levels.0/@map/@cells.0" right="//@levels.0/@map/@cells.2"/>
+      <cells x="2" type="WALL" bottom="//@levels.0/@map/@cells.5" left="//@levels.0/@map/@cells.1"/>
+      <cells y="1" type="WALL" top="//@levels.0/@map/@cells.0" bottom="//@levels.0/@map/@cells.6" right="//@levels.0/@map/@cells.4"/>
+      <cells x="1" y="1" top="//@levels.0/@map/@cells.1" bottom="//@levels.0/@map/@cells.7" left="//@levels.0/@map/@cells.3" right="//@levels.0/@map/@cells.5"/>
+      <cells x="2" y="1" type="WALL" top="//@levels.0/@map/@cells.2" bottom="//@levels.0/@map/@cells.8" left="//@levels.0/@map/@cells.4"/>
+      <cells y="2" type="WALL" top="//@levels.0/@map/@cells.3" right="//@levels.0/@map/@cells.7"/>
+      <cells x="1" y="2" top="//@levels.0/@map/@cells.4" left="//@levels.0/@map/@cells.6" right="//@levels.0/@map/@cells.8"/>
+      <cells x="2" y="2" type="GOAL" top="//@levels.0/@map/@cells.5" left="//@levels.0/@map/@cells.7"/>
+    </map>
+    <solution>
+      <firstContainer/>
+    </solution>
+    <traces>
+      <states position="//@levels.0/@map/@cells.1" orientation="EAST"/>
+    </traces>
+  </levels>
+</blocky:Game>

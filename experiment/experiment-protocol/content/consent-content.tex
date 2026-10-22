@@ -1,0 +1,140 @@
+
+% Content mirrors consent-form-word.pdf (v0.1). Mentions of the modeling
+% assistant are kept treatment-only so that the control group is not told
+% that an assistant exists.
+
+\newcommand{\consentversion}{1.0}
+\newcommand{\consentdate}{19 Oct 2026}
+
+\titlespacing*{\section}{0pt}{0.6em}{0.2em}
+
+\fancyfoot[R]{\small\itshape CLEM User Study --- Participant Information \& Informed Consent Form (v\consentversion)}
+
+% Shaded box with a thick left rule (familiarity check, GDPR summary)
+\newtcolorbox{infobox}{
+  unbreakable,
+  colback=black!5,
+  colframe=black!70,
+  boxrule=0pt,
+  leftrule=3pt,
+  sharp corners,
+  left=8pt, right=8pt, top=4pt, bottom=4pt
+}
+
+\newlist{consentitems}{itemize}{1}
+\setlist[consentitems]{label=\checkbox, leftmargin=1.8em, itemsep=0.4em, topsep=0.5em}
+
+{\LARGE\bfseries Document I: Participant Information Sheet and Informed Consent}
+\vspace{1em}
+
+{\small
+\renewcommand{\arraystretch}{1.15}
+\noindent\begin{tabular}{@{}>{\raggedright\arraybackslash}p{5.2cm}p{\dimexpr\linewidth-5.2cm-2\tabcolsep\relax}@{}}
+\hline
+\textbf{Study title:} & CLEM: Combining Live and Exploratory Modeling --- Blocky Maze User Study \\ \hline
+\textbf{Version and date:} & Version \consentversion, \consentdate \\ \hline
+\textbf{Researchers and study contact:} & Mohammadhadi Dehghani (mohammadhadi.dehghani@jku.at) \newline
+  Stefan Klikovits (stefan.klikovits@jku.at) \newline
+  Manuel Wimmer (manuel.wimmer@jku.at) \\ \hline
+\textbf{Controller (responsible institution):} & Johannes Kepler University Linz (JKU), Institute of Business Informatics -- Software Engineering \\ \hline
+\textbf{Data Protection Officer:} & Dominik Lamprecht (dominik.lamprecht@jku.at) \\ \hline
+\textbf{Funding:} & Funded by FWF (Austrian Science Fund) and ANR (French National Research Agency) under CLEM project \\ \hline
+\end{tabular}
+}
+
+\vspace{1em}
+{\Large\bfseries Part A: Information for Participants}
+\vspace{0.5em}
+
+\textbf{Dear Participant,}\\
+Thank you for considering taking part in our study. Please read this information carefully and take your time. You can ask us anything before, during, and after the study.
+
+\section{Purpose of the research study}
+% voluntarily evasive so that the control does not know it is a control group.
+We study how people design executable models so that the models behave as expected when they are run.
+An experimenter will observe you while you work and take notes on your actions.
+All collected observation notes, model design logs, and questionnaire responses are strictly anonymized.
+The outcome of the experiment will be an anonymous corpus of model design actions that we analyze to find ways to support the modeling process and to compare human modeling with assisted or automated approaches.
+
+\section{What is expected from you in the study}
+\label{sec:participant-expectation}
+\begin{itemize}[leftmargin=1.5em, itemsep=0pt, parsep=0pt, topsep=2pt]
+  \item \textbf{Tasks:} You solve \textbf{10 tasks of increasing difficulty} in a game called \emph{Blocky Maze}. You combine building blocks of a modeling language with instructions to guide a robot through a maze.
+  \iftreatment
+  \item \textbf{Training \& Assistance:} \textbf{The first 4 tasks are examples} so that you can learn how the modeling language is structured and how to use our modeling assistant. You may use the assistant for all tasks and ask the experimenters questions at any time.
+  \else
+  \item \textbf{Training:} \textbf{The first 4 tasks are examples} so that you can learn how the modeling language is structured. You may ask the experimenters questions at any time.
+  \fi
+  \item \textbf{Background  Questionnaire (Document II):} You fill in a short questionnaire about your personal background (for example, your level of education and experience) for statistical purposes.
+  \item \textbf{Perception Questionnaire (Document III):} At the end of the experiment, you fill in questionnaires to report your perception of the experiment\iftreatment, the usability of the environment, and the modeling assistant\else{} and the usability of the environment\fi.
+\end{itemize}
+
+The study takes about \textbf{one hour}. We do not make audio or video recordings. We will not contact you again after the study.
+
+\section{Risks, benefits and who profits}
+We expect no risks beyond those of normal computer work. If you feel tired or uncomfortable, you can take a break or stop at any time. No special insurance applies. You will not receive a direct personal benefit. The study benefits the research community and, in the long run, people who build models, by helping us create better modeling tools. If we notice something unexpected that concerns you personally, such as a technical problem on your device, we will tell you.
+
+\section{Participation and withdrawal}
+Your participation in this study is \textbf{completely voluntary}. You decide freely whether you take part, and \textbf{you may withdraw at any time during the study} without giving a reason and without any disadvantage. If you stop during the session, we immediately delete all data collected from you so far. If you request withdrawal after the study session has concluded, please note that because all task actions, observation notes, and questionnaire responses are strictly anonymized without any personal identifiers, these study data cannot be identified or removed. However, you can withdraw your consent at any time, in which case we will delete and destroy your signed personal consent form.
+
+\section{Data collection and treatment}
+\begin{itemize}[leftmargin=1.5em, itemsep=0pt, parsep=0pt, topsep=2pt]
+  \item \textbf{Anonymous study data:} Apart from this consent form (Document I), all collected data (your actions in the tasks, observation notes, Document II Demographic questions, and Document III Perception questionnaires) are anonymous and will not be linked to your name or any identifying information. Please do not include any personal information in the questionnaires.
+  \item \textbf{Personal data:} The only personal data we process are on the consent forms: your name, date of birth, place and signature. We need them to prove that you agreed.
+  \item \textbf{Purpose \& Open Dataset Publication:} Saved for research purposes only (analysis of the study, scientific publications and presentations). Anonymised study data will be published alongside the study results as an archived artifact on open access research platforms (such as Zenodo or similar repositories).
+  \item \textbf{Legal basis:} Processing of your personal data on the consent forms is based on your consent (Art.~6(1)(a) GDPR). We collect no special categories of data (such as health data).
+  \item \textbf{Storage and access:} Signed forms are kept locked away, separate from all study data, and only the study team can access them. We delete them after 10 years, in line with good scientific practice. The anonymised data are kept permanently in the open archive.
+  \item \textbf{Transfers:} We do not transfer your personal data outside the EU. (Open access data repositories such as Zenodo receive anonymised data only.)
+  \item \textbf{Future use:} We use your data only for this study. If we want to use your personal data for another purpose, we will ask you again.
+\end{itemize}
+
+\section{Your rights}
+You have the right to access, rectification, erasure, restriction of processing and data portability concerning your personal data on the consent form, and the right to withdraw your consent at any time. If you withdraw your consent, we will delete and destroy your signed consent form. Please note that because the experimental task and questionnaire data are fully anonymized and contain no personal identifiers, they are no longer personal data under GDPR Art.~4(1); thus rights to access or erasure cannot be applied to the anonymized research dataset after the session.
+
+\section{Who can you contact?}
+\begin{itemize}[leftmargin=1.5em, itemsep=0pt, parsep=0pt, topsep=2pt]
+  \item \textbf{Questions about the study / research team:} Mohammadhadi Dehghani (mohammadhadi.dehghani@jku.at), Stefan Klikovits (stefan.klikovits@jku.at), or Manuel Wimmer (manuel.wimmer@jku.at).
+  \item \textbf{Data Protection Officer:} Dominik Lamprecht (dominik.lamprecht@jku.at)
+\end{itemize}
+
+\clearpage
+{\Large\bfseries Part B: Confirmation of Participation and Personal Data Consent}
+\vspace{0.5em}
+
+\begin{infobox}
+\small
+\textbf{Summary of Personal Data Processing (Art.~6(1)(a) GDPR):}\\
+Personal data processed: Name, date of birth, place, and signature on this form.\\
+Storage period: Kept securely locked for 10 years, then destroyed. Anonymised study data are retained permanently in open repositories.\\
+Withdrawal: You may withdraw consent at any time without consequences by emailing the study team (mohammadhadi.dehghani@jku.at, stefan.klikovits@jku.at, or manuel.wimmer@jku.at). Upon request, your signed consent form will be deleted and destroyed. Because study dataset records are completely anonymized, they cannot be identified or removed.
+\end{infobox}
+
+\emph{Please tick each statement below:}
+\begin{consentitems}
+  \item I have received information about the study and what taking part involves, and I have understood it.
+  \item I could ask questions and my questions were answered to my satisfaction.
+  \item I know the background of the study and who to contact.
+  \item I take part voluntarily. I can stop at any time without giving reasons and without any consequences.
+  \item I agree that my anonymised data may be used in scientific publications and presentations.
+  \item I agree that my anonymised data may be published as an open dataset in a public research repository (such as Zenodo).
+  \item I consent voluntarily to the processing of my personal data (name, date of birth, place, signature) for 10 years as described in Part A and above.
+  \item I have been informed about my rights under the GDPR (access, rectification, erasure, restriction, portability, withdrawal).
+  \item I agree to take part in this study.
+\end{consentitems}
+
+\vspace{1.5em}
+{\renewcommand{\arraystretch}{1.4}
+\noindent\begin{tabular}{@{}p{\dimexpr0.5\linewidth-\tabcolsep\relax}p{\dimexpr0.5\linewidth-\tabcolsep\relax}@{}}
+\hline
+\multicolumn{2}{@{}l}{\textbf{Participant}} \\ \hline
+Name (in block letters): \newline \blank[5.5cm] & Date of birth: \newline \blank[5.5cm] \\ \hline
+Place and date: \newline \blank[5.5cm] & Signature: \newline \blank[5.5cm] \\ \hline
+\multicolumn{2}{@{}l}{\textbf{Researcher obtaining consent}} \\ \hline
+Name (in block letters): \newline MOHAMMADHADI DEHGHANI & Role / Organization: \newline Researcher \\ \hline
+Place and date: \newline Linz 19.10.2026 & Signature: \newline \blank[5.5cm] \\ \hline
+\end{tabular}}
+
+\vspace{2em}
+\begin{center}
+\small\color{black!60} * Two copies are signed: one stays with the participant, one is kept locked away by the study team. *
+\end{center}

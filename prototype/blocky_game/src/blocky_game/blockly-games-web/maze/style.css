@@ -1,0 +1,309 @@
+#blockly {
+  position: fixed;
+  bottom: 10px;
+}
+#visualization {
+  position: relative;
+}
+#capacityBubble {
+  position: absolute;
+  margin-top: -0.5em;
+  left: 10px;
+  top: 375px;
+  width: 380px;
+}
+html[dir="RTL"] #capacityBubble {
+  left: auto;
+  right: 10px;
+}
+#capacity {
+  display: none;
+  color: #fff;
+  padding: 5px 1em;
+  border-radius: 15px;
+  background-color: rgba(64,64,64,0.7);
+  font-size: large;
+}
+.capacityNumber {
+  font-weight: bold;
+}
+#sampleOneTopBlock {
+  height: 80px;
+  width: 250px;
+}
+#pegSpin {
+  height: 50px;
+  width: 49px;
+  background-position: -343px 0px;
+  margin-top: 10px;
+  position: absolute;
+}
+html[dir="RTL"] #pegSpin {
+  background-position: -441px 0px;
+}
+
+.helpMenuFake {
+  border-radius: 4px;
+  background-color: #bfcdde;
+  color: #000;
+  padding: 0 1ex;
+  cursor: default;
+}
+img[src$="help_up.png"] {
+  margin: -20px 10px 0;
+  height: 64px;
+  width: 23px;
+}
+img[src$="help_down.png"] {
+  margin: 0 10px -20px;
+  height: 64px;
+  width: 23px;
+}
+
+#svgMaze {
+  overflow: hidden;
+}
+
+/* 'Look' icon */
+#look>path {
+  display: none;
+  fill: none;
+  stroke-width: 10;
+  stroke-linecap: round;
+  stroke-opacity: 0.7;
+}
+
+/* Buttons */
+button.primary {
+  /* Can't use "text-align: start" due to IE. */
+  text-align: left;
+}
+html[dir="RTL"] button.primary {
+  text-align: right;
+}
+
+/* Sprited icons. */
+.icon21 {
+  height: 21px;
+  width: 21px;
+  background-image: url(icons.png);
+}
+.link {
+  background-position: 0px 0px;
+}
+.run {
+  background-position: 0px -21px;
+}
+.stop {
+  background-position: -21px -21px;
+}
+
+#pegmanButton {
+  padding: 0;
+  position: relative;
+}
+#pegmanButton:active {
+  border: 1px solid #ddd !important;
+}
+#pegmanButton>img {
+  margin-left: -0.5ex;
+  margin-right: 0.5ex;
+  height: 38px;
+  width: 49px;
+  background-position: -980px 0px;
+  opacity: 0.8;
+}
+html[dir="RTL"] #pegmanButton>img {
+  margin-left: 0.5ex;
+  margin-right: -0.5ex;
+}
+#pegmanButton>span {
+  position: absolute;
+  top: 0.8ex;
+  margin-left: -15px;
+}
+html[dir="RTL"] #pegmanButton>span {
+  margin-right: -15px;
+}
+#pegmanMenu {
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 2px 2px 5px #888;
+  display: none;
+  position: absolute;
+}
+#pegmanMenu>div {
+  background-color: #fff;
+}
+#pegmanMenu>div:hover {
+  background-color: #57e;
+}
+#pegmanMenu>div>img {
+  height: 38px;
+  width: 49px;
+  background-position: -980px 0px;
+}
+
+/* Mobile Responsive Layout for Maze */
+@media (max-width: 768px) {
+  #visualization {
+    position: relative;
+    width: 100%;
+    max-width: 340px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  #svgMaze {
+    width: 100% !important;
+    max-width: 340px;
+    height: auto !important;
+    aspect-ratio: 1 / 1;
+    display: block;
+  }
+
+  #capacityBubble {
+    position: relative;
+    top: auto;
+    left: auto;
+    width: 100%;
+    margin-top: 5px;
+    text-align: center;
+  }
+
+  #capacity {
+    display: inline-block;
+    font-size: medium;
+    padding: 4px 10px;
+  }
+
+  #blockly {
+    position: relative;
+    bottom: auto;
+    width: 100% !important;
+    height: calc(100vh - 460px);
+    min-height: 320px;
+    margin-top: 10px;
+  }
+}
+
+/* Level Session Timer Widget */
+#levelTimerWidget {
+  position: fixed;
+  top: 8px;
+  right: 12px;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 4px 10px;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.16);
+  border: 1px solid #c0c6cc;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-size: 13px;
+  color: #24292f;
+  user-select: none;
+}
+#levelTimerWidget .timer-session {
+  font-weight: 600;
+  color: #0969da;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#levelTimerWidget .timer-level {
+  font-weight: 500;
+  color: #57606a;
+}
+#levelTimerWidget .timer-clock {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  color: #1a7f37;
+  background: #dafbe1;
+  padding: 2px 6px;
+  border-radius: 6px;
+  border: 1px solid rgba(27, 31, 36, 0.15);
+}
+#levelTimerWidget .timer-btn {
+  background: #f6f8fa;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #24292f;
+  cursor: pointer;
+}
+#levelTimerWidget .timer-btn:hover {
+  background: #eef1f4;
+  border-color: rgba(27, 31, 36, 0.15);
+}
+
+/* Level Session Modal */
+#levelTimerModal {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+}
+#levelTimerModal .modal-box {
+  background: #ffffff;
+  padding: 20px 24px;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  width: 320px;
+  max-width: 90vw;
+}
+#levelTimerModal h3 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  color: #24292f;
+}
+#levelTimerModal p {
+  margin: 0 0 12px 0;
+  font-size: 13px;
+  color: #57606a;
+}
+#levelTimerModal input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 10px;
+  font-size: 14px;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  outline: none;
+}
+#levelTimerModal input:focus {
+  border-color: #0969da;
+  box-shadow: 0 0 0 3px rgba(9, 105, 218, 0.2);
+}
+#levelTimerModal .modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+#levelTimerModal .modal-btn-start {
+  background: #2da44e;
+  color: #ffffff;
+  border: 1px solid rgba(27, 31, 36, 0.15);
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+#levelTimerModal .modal-btn-start:hover {
+  background: #2c974b;
+}
+
+

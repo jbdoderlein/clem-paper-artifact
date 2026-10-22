@@ -1,0 +1,55 @@
+\documentclass[11pt,a4paper]{article}
+
+\input{experiment-protocol/config}
+
+\begin{document}
+
+\newlist{options}{itemize}{1}
+\setlist[options]{label=\checkbox, leftmargin=1.5em,itemsep=0.3em, topsep=0.5em}
+
+{\LARGE\bfseries Document II: Background Questions}
+\vspace{1em}
+\question{Participant identifier:} \blank[6cm]
+\vspace{1em}
+\begin{enumerate}[leftmargin=*,label=\textbf{\arabic*.}]
+
+\question{Specify your gender (mark one)}\par\vspace{0.5em}
+\checkbox Female \checkbox Male \checkbox Not listed: \blank[6cm]
+\checkbox Prefer Not to Answer
+
+\question{Specify your level of education (mark one)}
+\begin{options}
+  \item Undergraduate Student
+  \item Master Student
+  \item PhD Student
+  \item PhD
+  \item Other \blank
+\end{options}
+
+%\question{What level of English do you currently have? (mark one)}
+%\begin{options}
+%  \item Beginner (A1)
+%  \item Elementary (A2)
+%  \item Intermediate (B1)
+%  \item Upper Intermediate (B2)
+%  \item Advanced (C1)
+%  \item Proficient (C2)
+%\end{options}
+
+\question{You currently work in\ldots}
+\begin{options}
+  \item Academia
+  \item Industry
+  \item Research center
+  \item Student
+  \item Other \blank
+\end{options}
+
+\question{State your experience (in years) with software development} \blank[2cm]
+
+\question{State your experience (in years) with modeling languages} \blank[2cm]
+
+\question{I was familiar with the Blocky Maze game prior to this experiment:} \checkbox Yes \checkbox No
+
+\end{enumerate}
+\end{document}
