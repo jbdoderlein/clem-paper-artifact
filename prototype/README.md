@@ -11,7 +11,7 @@ You can run the entire application, including the GUI and the MoMoT synthesis ba
 ### Windows (One-Click)
 1.  Make sure you have **Docker Desktop** installed and running.
 2.  Double-click **`run-game.bat`**.
-3.  The game will open automatically in your browser at: **[http://localhost:6080](http://localhost:6080)**.
+3.  The game will open automatically in your browser at: **[http://localhost:8080/maze.html](http://localhost:8080/maze.html)**.
 
 ### Linux / macOS
 1.  Make sure you have **Docker** and **Docker Compose** installed.
@@ -19,7 +19,7 @@ You can run the entire application, including the GUI and the MoMoT synthesis ba
     ```bash
     ./run-game.sh
     ```
-3.  Open your browser and navigate to: **[http://localhost:6080](http://localhost:6080)**.
+3.  Open your browser and navigate to: **[http://localhost:8080/maze.html](http://localhost:8080/maze.html)**.
 
 ---
 

@@ -5,7 +5,7 @@ CLEM extends Blockly Games Maze with model-based simulation and search for progr
 
 | Path | Contents |
 |---|---|
-| `prototype/` | The CLEM prototype (called "Blocky Maze" in the code): Java application, EMF model, MOMoT search, Henshin rules. To launch it, run `./run-game.sh` (Docker) and open http://localhost:6080. See `prototype/README.md`. |
+| `prototype/` | The CLEM prototype (called "Blocky Maze" in the code): Java application, EMF model, MOMoT search, Henshin rules. To launch it, run `./run-game.sh` (Docker) and open http://localhost:8080/maze.html. See `prototype/README.md`. |
 | `experiment/data/` | Study data: one session report per participant (`.json`), the replayed models (`models/`), their Pareto labels (`labels.csv`) and the questionnaire answers. |
 | `experiment/*.R` | Analysis scripts. `Rscript main.R` regenerates all the plots and tables. See `experiment/README.md`. |
 | `experiment/ground_truth/` | Exhaustive search used as the reference for Pareto optimality, with its precomputed tables. |
