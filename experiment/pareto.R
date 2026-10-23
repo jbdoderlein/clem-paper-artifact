@@ -76,6 +76,8 @@ plot_pareto_all <- function(goal, file = "plots/models_pareto_all.png") {
     p <- plot_labels(goal) +
         labs(x = "Level", y = "Models", fill = NULL) +
         theme(
+            text = element_text(size = 9),
+            legend.key.size = unit(8, "pt"),
             legend.position = "inside",
             legend.position.inside = c(0.5, 0.98),
             legend.justification = c(0.5, 1),
@@ -83,8 +85,8 @@ plot_pareto_all <- function(goal, file = "plots/models_pareto_all.png") {
             plot.margin = margin(2, 2, 2, 2)
         )
 
-    ggsave(file, p, width = 3.5, height = 2.2, dpi = 300, create.dir = TRUE)
-    ggsave(sub("\\.png$", ".pdf", file), p, width = 3.5, height = 2.2, create.dir = TRUE)
+    ggsave(file, p, width = 3.5, height = 1.9, dpi = 300, create.dir = TRUE)
+    ggsave(sub("\\.png$", ".pdf", file), p, width = 3.5, height = 1.9, create.dir = TRUE)
 }
 
 # Stacked bars of the goal-reaching models per level, colored by label, one panel per variant,
