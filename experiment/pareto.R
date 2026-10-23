@@ -69,12 +69,22 @@ list_pareto_all <- function(goal, labels) {
     arrange(goal, level, pareto, actions, blocks, session, timestamp)
 }
 
-# Stacked bars of the goal-reaching models per level, colored by label, and save it to `file`.
+# Stacked bars of the goal-reaching models per level, colored by label, and save it to `file`
+# and to the same name in PDF. Compact for one paper column: no title (the caption says it),
+# legend inside the plot, drawn at column width so LaTeX does not scale it down.
 plot_pareto_all <- function(goal, file = "plots/models_pareto_all.png") {
     p <- plot_labels(goal) +
-        labs(title = "Goal-reaching models, all participants", x = "Level", y = "Models", fill = NULL)
+        labs(x = "Level", y = "Models", fill = NULL) +
+        theme(
+            legend.position = "inside",
+            legend.position.inside = c(0.5, 0.98),
+            legend.justification = c(0.5, 1),
+            legend.direction = "horizontal",
+            plot.margin = margin(2, 2, 2, 2)
+        )
 
-    ggsave(file, p, width = 5, height = 3.5, dpi = 150, create.dir = TRUE)
+    ggsave(file, p, width = 3.5, height = 2.2, dpi = 300, create.dir = TRUE)
+    ggsave(sub("\\.png$", ".pdf", file), p, width = 3.5, height = 2.2, create.dir = TRUE)
 }
 
 # Stacked bars of the goal-reaching models per level, colored by label, one panel per variant,

@@ -60,7 +60,7 @@ The scripts generate the plots supporting the analysis in the `plots/` subfolder
 | `plots/per_level.png`, `plots/per_level_compact_*.png` | every metric per level and variant, and the compact version for the paper |
 | `plots/distributions/` | the spread of each metric, to choose between mean and median |
 | `tables/overall.csv`, `tables/overall.tex` | mean and median of every metric over all levels, per variant (LaTeX for the paper) |
-| `plots/models_pareto_all.png`, `tables/models_pareto_all.csv` | goal-reaching runs per level by label, all participants, with a row `all` |
+| `plots/models_pareto_all.png` (and `.pdf`), `tables/models_pareto_all.csv` | goal-reaching runs per level by label, all participants, with a row `all` |
 | `tables/models_pareto_all_models.csv` | every goal-reaching run with its label and the program that dominates it |
 | `plots/models_pareto.png`, `tables/models_pareto.csv` | the same counts per level and variant |
 | `plots/exploration_models.png`, `tables/exploration_models.csv`, `tables/exploration_per_level.csv` | the loaded models, see [Models loaded from the exploration](#models-loaded-from-the-exploration) |
