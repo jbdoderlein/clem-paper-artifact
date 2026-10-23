@@ -14,8 +14,8 @@
 
 # The labels, with readable names and colors. Also used by exploration.R.
 pareto_labels <- c(
-    optimal       = "Non-dominated",
-    dominated     = "Dominated",
+    optimal       = "Optimal",
+    dominated     = "Suboptimal",
     "not covered" = "Not covered (unknown)",
     "no goal"     = "Does not reach the goal"
 )
